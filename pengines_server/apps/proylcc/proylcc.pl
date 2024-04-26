@@ -35,3 +35,8 @@ put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 0):-
 	Cell == Content
 		;
 	replace(_Cell, ColN, Content, Row, NewRow)).
+	%ChequearPistas([RowN, ColN], RowsClues, ColsClues, grid, RowSat, ColSat).
+
+	%Chequear filas y columnas
+	%ChequearPistas([RowN, ColN], RowsClues, ColsClues, grid, RowSat, ColSat):-
+	

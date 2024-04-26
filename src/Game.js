@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
+import Boton from './Boton';
 
 let pengine;
 
 function Game() {
-
   // State
   const [grid, setGrid] = useState(null);
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
+  const [content, setContent] = useState('#');
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -38,7 +39,7 @@ function Game() {
     }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
-    const content = '#'; // Content to put in the clicked square.
+
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
     const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
@@ -51,10 +52,14 @@ function Game() {
     });
   }
 
+  const cambiarContent = () => {
+    // Cambia el content entre '#' y 'X'
+    setContent(content === '#' ? 'X' : '#');
+  }
+
   if (!grid) {
     return null;
   }
-
   const statusText = 'Keep playing!';
   return (
     <div className="game">
@@ -67,8 +72,11 @@ function Game() {
       <div className="game-info">
         {statusText}
       </div>
+      <div>
+            <Boton text={content} clic={cambiarContent} />
+        </div>
     </div>
+    
   );
 }
-
 export default Game;
