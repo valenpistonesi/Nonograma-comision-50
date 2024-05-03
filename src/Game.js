@@ -12,6 +12,9 @@ function Game() {
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
   const [content, setContent] = useState('#');
+  const [colsCluesSat, setColsCluesSat] = useState(null);
+  const [rowsCluesSat, setRowsCluesSat] = useState(null);
+  const [gameStatus, setGameStatus] = useState('Playing');
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -28,6 +31,8 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
+        setColsCluesSat(Array(response['ColumClues'].length).fill(true));
+        setRowsCluesSat(Array(response['RowClues'].length).fill(true));
       }
     });
   }
@@ -47,6 +52,10 @@ function Game() {
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
+       /* setColsClues(response['colsCluesSat']);
+        setRowsClues(response['rowsCluesSat']);*/
+        //recorrer las listas de filas y columnas sat todas las posiciones y pintar las que lea como true
+        //mas ineficiente pero funcional
       }
       setWaiting(false);
     });
@@ -55,6 +64,22 @@ function Game() {
   const cambiarContent = () => {
     // Cambia el content entre '#' y 'X'
     setContent(content === '#' ? 'X' : '#');
+  }
+
+  function checkearFinDeJuego(){
+    //chequeo col cluesSat
+    //chequeo row clues sat
+    //si esta todo bien, actualizo el game status.
+    var bandera = true;
+    for (var c = 0; bandera && c < 'RowClues'.length; c++){
+      bandera = (rowsCluesSat[c] === true);
+    }
+
+    for (var d = 0; bandera && d < 'ColClues'.length; d++){
+      bandera = (colsCluesSat[c] === true);
+    }
+
+    if (bandera ? setGameStatus('Game-Over') : setGameStatus('Playing'));
   }
 
   if (!grid) {
@@ -68,6 +93,8 @@ function Game() {
         rowsClues={rowsClues}
         colsClues={colsClues}
         onClick={(i, j) => handleClick(i, j)}
+        rowSat={rowsCluesSat[0]}
+        colSat={colsCluesSat[0]}
       />
       <div className="game-info">
         {statusText}

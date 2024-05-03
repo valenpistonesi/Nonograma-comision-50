@@ -19,6 +19,17 @@ body {
   text-align: center;
 }
 
+.blackSquare {
+  background: #0c0101;
+  border: 1px solid #999;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+}
+
 .board {
   display: grid;
 }
@@ -29,6 +40,32 @@ body {
 
 .vertical {
   display: flex;
+  flex-direction: column;
+}
+
+.rowCluesSat {
+  display: grid;
+}
+
+.colCluesSat {
+  display: grid;
+}
+
+.clueSat {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background: #1dad18;
+  border-radius: 8px;
+  margin: 5px;
+  padding: 3px;
+}
+
+.clueSat div {
+  margin: 2px
+}
+
+.colCluesSat .clueSat {
   flex-direction: column;
 }
 

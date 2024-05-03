@@ -2,13 +2,17 @@ import React from 'react';
 import Square from './Square';
 import Clue from './Clue';
 
-function Board({ grid, rowsClues, colsClues, onClick }) {
+function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
+    console.log("ColSat:" + colSat);
+    //otra solucion que me dieron: si lo hago asi como hice a todas
+    //las cols las evaluo con el colSat pero lo que tengo que evaluar 
+    //es cada pista por si misma
     return (
         <div className="vertical">
             <div
-                className="colClues"
+                className={(colSat ? " colCluesSat" : "colClues")}
                 style={{
                     gridTemplateRows: '60px',
                     gridTemplateColumns: `60px repeat(${numOfCols}, 40px)`
@@ -23,12 +27,12 @@ function Board({ grid, rowsClues, colsClues, onClick }) {
             >
                 <div>{/* top-left corner square */}</div>
                 {colsClues.map((clue, i) =>
-                    <Clue clue={clue} key={i} />
+                    <Clue clue={clue} sat={colSat} key={i} />
                 )}
             </div>
             <div className="horizontal">
                 <div
-                    className="rowClues"
+                    className={(rowSat ? " rowCluesSat" : "rowClues")}
                     style={{
                         gridTemplateRows: `repeat(${numOfRows}, 40px)`,
                         gridTemplateColumns: '60px'
@@ -36,7 +40,7 @@ function Board({ grid, rowsClues, colsClues, onClick }) {
                     }}
                 >
                     {rowsClues.map((clue, i) =>
-                        <Clue clue={clue} key={i} />
+                        <Clue clue={clue} sat={rowSat} key={i} />
                     )}
                 </div>
                 <div className="board"
