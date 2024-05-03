@@ -35,12 +35,14 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, FilaSat, ColSat)
 	% NewRow is the result of replacing the cell in position ColN of Row by Content (no matter its content: _Cell).			
 	(replace(Cell, ColN, _, Row, NewRow) , Cell == Content; replace(_Cell, ColN, Content, Row, NewRow)),
 	
+	nth0(RowN,RowsClues, FilaClues),
 	nth0(RowN, NewGrid, ListaCaracteresFila),
-	checkeoSatShell(ListaCaracteresFila,RowsClues,FilaSat),
+	checkeoSatShell(ListaCaracteresFila,FilaClues,FilaSat),
 
+	nth0(ColN,ColsClues, ColumnaClues),
 	columnaALista(ColN, NewGrid, C),
 	reverse(C,ListaCaracteresColumna),
-	checkeoSatShell(ListaCaracteresColumna,ColsClues, ColSat).
+	checkeoSatShell(ListaCaracteresColumna,ColumnaClues, ColSat).
 	
 checkeoSatShell(ListaCaracteres, ListaPistas,Resultado):-
 	headTail(ListaCaracteres,H1,T1),
