@@ -43,32 +43,6 @@ body {
   flex-direction: column;
 }
 
-.rowCluesSat {
-  display: grid;
-}
-
-.colCluesSat {
-  display: grid;
-}
-
-.clueSat {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  background: #1dad18;
-  border-radius: 8px;
-  margin: 5px;
-  padding: 3px;
-}
-
-.clueSat div {
-  margin: 2px
-}
-
-.colCluesSat .clueSat {
-  flex-direction: column;
-}
-
 .rowClues {
   display: grid;
 }
@@ -87,12 +61,28 @@ body {
   padding: 3px;
 }
 
+.clueSat {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background: #1dad18;
+  border-radius: 8px;
+  margin: 5px;
+  padding: 3px;
+}
+
 .clue div {
   margin: 2px
 }
 
-.colClues .clue {
+.clueSat div {
+  margin: 2px
+}
+
+.colClues .clue .clueSat{
   flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .game {

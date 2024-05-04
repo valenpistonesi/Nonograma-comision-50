@@ -12,7 +12,7 @@ function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
     return (
         <div className="vertical">
             <div
-                className={(colSat ? " colCluesSat" : "colClues")}
+                className= "colClues"/*{(colSat ? " colCluesSat" : "colClues")}*/
                 style={{
                     gridTemplateRows: '60px',
                     gridTemplateColumns: `60px repeat(${numOfCols}, 40px)`
@@ -32,7 +32,7 @@ function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
             </div>
             <div className="horizontal">
                 <div
-                    className={(rowSat ? " rowCluesSat" : "rowClues")}
+                    className="rowClues"/*{(rowSat ? " rowCluesSat" : "rowClues")}*/
                     style={{
                         gridTemplateRows: `repeat(${numOfRows}, 40px)`,
                         gridTemplateColumns: '60px'

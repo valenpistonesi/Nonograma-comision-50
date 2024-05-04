@@ -14,6 +14,9 @@ function Game() {
   const [content, setContent] = useState('#');
   const [colsCluesSat, setColsCluesSat] = useState(null);
   const [rowsCluesSat, setRowsCluesSat] = useState(null);
+  const [rowSatValue, setRowSatValue] = useState(false);
+  const [colSatValue, setColSatValue] = useState(false);
+  const [inicializado, setInicializado] = useState(false);
   const [gameStatus, setGameStatus] = useState('Playing');
 
   useEffect(() => {
@@ -31,8 +34,6 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
-        setColsCluesSat(Array(response['ColumClues'].length).fill(true));
-        setRowsCluesSat(Array(response['RowClues'].length).fill(true));
       }
     });
   }
@@ -42,23 +43,45 @@ function Game() {
     if (waiting) {
       return;
     }
+
+    if (!inicializado){
+      setColsCluesSat(Array(grid.length).fill(false));
+      setRowsCluesSat(Array(grid[0].length).fill(false));
+      setInicializado(true);
+    }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
 
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
-    const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
-    setWaiting(true);
-    pengine.query(queryS, (success, response) => {
-      if (success) {
-        setGrid(response['ResGrid']);
-       /* setColsClues(response['colsCluesSat']);
-        setRowsClues(response['rowsCluesSat']);*/
-        //recorrer las listas de filas y columnas sat todas las posiciones y pintar las que lea como true
-        //mas ineficiente pero funcional
-      }
-      setWaiting(false);
-    });
+    if (inicializado){
+      const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+      setWaiting(true);
+      pengine.query(queryS, (success, response) => {
+        if (success) {
+          setGrid(response['ResGrid']);
+          let newRowsCluesSat = [...rowsCluesSat];
+          newRowsCluesSat[i] = (1 === response[`RowSat`]);
+          setRowsCluesSat(newRowsCluesSat);
+
+          let newColsCluesSat = [...colsCluesSat];
+          newColsCluesSat[j] = (1 === response[`ColSat`]);
+          setRowsCluesSat(newColsCluesSat);
+
+
+          console.log("Valores de RowSat del put: " + response[`RowSat`]);
+          console.log("Valores de ColSat del put: " + response[`ColSat`]);
+          setRowSatValue(rowsCluesSat[i]);
+          setColSatValue(colsCluesSat[j]);
+
+          console.log("En game colSat: " + rowSatValue);
+          console.log("En game rowSat: " + colSatValue);
+          //recorrer las listas de filas y columnas sat todas las posiciones y pintar las que lea como true
+          //mas ineficiente pero funcional
+        }
+        setWaiting(false);
+      });
+  }
   }
 
   const cambiarContent = () => {
@@ -93,8 +116,8 @@ function Game() {
         rowsClues={rowsClues}
         colsClues={colsClues}
         onClick={(i, j) => handleClick(i, j)}
-        rowSat={rowsCluesSat[0]}
-        colSat={colsCluesSat[0]}
+        rowSat={rowSatValue}
+        colSat={colSatValue}
       />
       <div className="game-info">
         {statusText}
