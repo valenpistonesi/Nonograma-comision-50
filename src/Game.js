@@ -17,7 +17,7 @@ function Game() {
   const [rowSatValue, setRowSatValue] = useState(false);
   const [colSatValue, setColSatValue] = useState(false);
   const [inicializado, setInicializado] = useState(false);
-  const [gameStatus, setGameStatus] = useState('Playing');
+  const [jugando, setJugando] = useState(true);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -39,8 +39,8 @@ function Game() {
   }
 
   function handleClick(i, j) {
-    // No action on click if we are waiting.
-    if (waiting) {
+    // No action on click if we are waiting or the game is over.
+    if (waiting | !jugando) {
       return;
     }
 
@@ -60,17 +60,22 @@ function Game() {
       pengine.query(queryS, (success, response) => {
         if (success) {
           setGrid(response['ResGrid']);
+
           let newRowsCluesSat = [...rowsCluesSat];
           newRowsCluesSat[i] = (1 === response[`RowSat`]);
           setRowsCluesSat(newRowsCluesSat);
 
           let newColsCluesSat = [...colsCluesSat];
           newColsCluesSat[j] = (1 === response[`ColSat`]);
-          setRowsCluesSat(newColsCluesSat);
+          setColsCluesSat(newColsCluesSat);
 
+          //Hasta aca el newconls y eso funciona bien logicamente y todo. Asigna los nuevos valores correctamente?
 
-          console.log("Valores de RowSat del put: " + response[`RowSat`]);
-          console.log("Valores de ColSat del put: " + response[`ColSat`]);
+          console.log("Estoy dentro del succes. Imprimiento contenido de arreglos: ");
+          imprimirArreglos();
+
+          console.log("Valores nuevos de RowSat del put: " + rowsCluesSat[i]);
+          console.log("Valores nuevos de ColSat del put: " + colsCluesSat[j]);
           setRowSatValue(rowsCluesSat[i]);
           setColSatValue(colsCluesSat[j]);
 
@@ -81,6 +86,7 @@ function Game() {
         }
         setWaiting(false);
       });
+      checkearFinDeJuego();
   }
   }
 
@@ -89,26 +95,41 @@ function Game() {
     setContent(content === '#' ? 'X' : '#');
   }
 
+  const imprimirArreglos = () => {
+    // Imprimir colsCluesSat
+    console.log("colsCluesSat:");
+    colsCluesSat.forEach((valor, indice) => {
+      console.log(`Índice ${indice}: ${valor}`);
+    });
+  
+    // Imprimir rowsCluesSat
+    console.log("rowsCluesSat:");
+    rowsCluesSat.forEach((valor, indice) => {
+      console.log(`Índice ${indice}: ${valor}`);
+    });
+  };
+
   function checkearFinDeJuego(){
-    //chequeo col cluesSat
-    //chequeo row clues sat
-    //si esta todo bien, actualizo el game status.
     var bandera = true;
-    for (var c = 0; bandera && c < 'RowClues'.length; c++){
+
+    for (var c = 0; bandera && c < rowsCluesSat.length; c++){
       bandera = (rowsCluesSat[c] === true);
+      console.log("Valor de rowClueSat en C: "+rowsCluesSat[c]);
     }
 
-    for (var d = 0; bandera && d < 'ColClues'.length; d++){
-      bandera = (colsCluesSat[c] === true);
+    for (var d = 0; bandera && d < colsCluesSat.length; d++){
+      bandera = (colsCluesSat[d] === true);
+      console.log("Valor de ColClueSat en C: "+colsCluesSat[d]);
     }
 
-    if (bandera ? setGameStatus('Game-Over') : setGameStatus('Playing'));
+
+    setJugando(!bandera);
   }
 
   if (!grid) {
     return null;
   }
-  const statusText = 'Keep playing!';
+
   return (
     <div className="game">
       <Board
@@ -120,7 +141,7 @@ function Game() {
         colSat={colSatValue}
       />
       <div className="game-info">
-        {statusText}
+        {jugando ? "Jugando" : "Fin del juego"}
       </div>
       <div>
             <Boton text={content} clic={cambiarContent} />

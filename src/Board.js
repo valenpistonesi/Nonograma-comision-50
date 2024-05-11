@@ -5,7 +5,6 @@ import Clue from './Clue';
 function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
-    console.log("ColSat:" + colSat);
     //otra solucion que me dieron: si lo hago asi como hice a todas
     //las cols las evaluo con el colSat pero lo que tengo que evaluar 
     //es cada pista por si misma
