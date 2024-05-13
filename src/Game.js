@@ -76,8 +76,8 @@ function Game() {
 
           console.log("Valores nuevos de RowSat del put: " + rowsCluesSat[i]);
           console.log("Valores nuevos de ColSat del put: " + colsCluesSat[j]);
-          setRowSatValue(rowsCluesSat[i]);
-          setColSatValue(colsCluesSat[j]);
+          setRowSatValue(rowsCluesSat);
+          setColSatValue(colsCluesSat);
 
           console.log("En game colSat: " + rowSatValue);
           console.log("En game rowSat: " + colSatValue);

@@ -5,13 +5,11 @@ import Clue from './Clue';
 function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
-    //otra solucion que me dieron: si lo hago asi como hice a todas
-    //las cols las evaluo con el colSat pero lo que tengo que evaluar 
-    //es cada pista por si misma
+
     return (
         <div className="vertical">
             <div
-                className= "colClues"/*{(colSat ? " colCluesSat" : "colClues")}*/
+                className= "colClues"
                 style={{
                     gridTemplateRows: '60px',
                     gridTemplateColumns: `60px repeat(${numOfCols}, 40px)`
@@ -26,12 +24,12 @@ function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
             >
                 <div>{/* top-left corner square */}</div>
                 {colsClues.map((clue, i) =>
-                    <Clue clue={clue} sat={colSat} key={i} />
+                    <Clue clue={clue} sat={colSat[i]} key={i} />
                 )}
             </div>
             <div className="horizontal">
                 <div
-                    className="rowClues"/*{(rowSat ? " rowCluesSat" : "rowClues")}*/
+                    className="rowClues"
                     style={{
                         gridTemplateRows: `repeat(${numOfRows}, 40px)`,
                         gridTemplateColumns: '60px'
@@ -39,7 +37,7 @@ function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
                     }}
                 >
                     {rowsClues.map((clue, i) =>
-                        <Clue clue={clue} sat={rowSat} key={i} />
+                        <Clue clue={clue} sat={rowSat[i]} key={i} />
                     )}
                 </div>
                 <div className="board"
