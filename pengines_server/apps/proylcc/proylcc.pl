@@ -37,12 +37,14 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, FilaSat, ColSat)
 	
 	nth0(RowN,RowsClues, FilaClues),
 	nth0(RowN, NewGrid, ListaCaracteresFila),
-	checkeoSatShell(ListaCaracteresFila,FilaClues,FilaSat),
+    adaptarLista(ListaCaracteresFila, ListaCar),
+	checkeoSatShell(ListaCar,FilaClues,FilaSat),
 
 	nth0(ColN,ColsClues, ColumnaClues),
 	columnaALista(ColN, NewGrid, C),
 	reverse(C,ListaCaracteresColumna),
-	checkeoSatShell(ListaCaracteresColumna,ColumnaClues, ColSat).
+    adaptarLista(ListaCaracteresColumna, ListaCol),
+	checkeoSatShell(ListaCol,ColumnaClues, ColSat).
 	
 checkeoSatShell(ListaCaracteres, ListaPistas,Resultado):-
 	headTail(ListaCaracteres,H1,T1),
@@ -103,3 +105,13 @@ columnaALista(C,Grilla,Resultado):-
 	nth0(C,H,Cont),
 	columnaALista(C,T,R),
 	append(R,[Cont],Resultado).
+
+% el caso mas general es con X, 
+
+adaptarLista([], []). 
+adaptarLista([""|Xs], [""|Ys]) :- 
+    adaptarLista(Xs, Ys).
+adaptarLista(["X"|Xs], ["X"|Ys]) :- 
+    adaptarLista(Xs, Ys).
+adaptarLista(["#"|Xs], ["#"|Ys]) :- 
+    adaptarLista(Xs, Ys).
