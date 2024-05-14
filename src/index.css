@@ -3,14 +3,17 @@
 }
 
 body {
+  height: 100vh;
   font-family: sans-serif;
   margin: 20px;
   padding: 0;
+  background-color: #1e7dbd;
+  background-image: linear-gradient(to bottom right, #86a3c9, #1e7dbd);
 }
 
 .square {
   background: #fff;
-  border: 1px solid #999;
+  border: 1px solid #999;/*Aca cambio el grosor y el color de los bordes de la grilla. quiza tambien tenga que cambiar los bordes del blacksquare*/
   font-size: 24px;
   font-weight: bold;
   margin-right: -1px;

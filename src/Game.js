@@ -48,6 +48,7 @@ function Game() {
       setColsCluesSat(Array(grid.length).fill(false));
       setRowsCluesSat(Array(grid[0].length).fill(false));
       setInicializado(true);
+      console.log("Juego inicializado.");
     }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
@@ -74,19 +75,14 @@ function Game() {
           console.log("Estoy dentro del succes. Imprimiento contenido de arreglos: ");
           imprimirArreglos();
 
-          console.log("Valores nuevos de RowSat del put: " + rowsCluesSat[i]);
-          console.log("Valores nuevos de ColSat del put: " + colsCluesSat[j]);
-          setRowSatValue(rowsCluesSat);
-          setColSatValue(colsCluesSat);
-
-          console.log("En game colSat: " + rowSatValue);
-          console.log("En game rowSat: " + colSatValue);
-          //recorrer las listas de filas y columnas sat todas las posiciones y pintar las que lea como true
-          //mas ineficiente pero funcional
+          console.log("Valores nuevos de RowSat del put: " + response[`RowSat`]);
+          console.log("Valores nuevos de ColSat del put: " + response[`ColSat`]);
+          setRowSatValue(newRowsCluesSat);
+          setColSatValue(newColsCluesSat);
         }
         setWaiting(false);
+        checkearFinDeJuego();
       });
-      checkearFinDeJuego();
   }
   }
 
@@ -114,15 +110,13 @@ function Game() {
 
     for (var c = 0; bandera && c < rowsCluesSat.length; c++){
       bandera = (rowsCluesSat[c] === true);
-      console.log("Valor de rowClueSat en C: "+rowsCluesSat[c]);
+      console.log("Valor de rowClueSat en "+c+": "+rowsCluesSat[c]);
     }
 
     for (var d = 0; bandera && d < colsCluesSat.length; d++){
       bandera = (colsCluesSat[d] === true);
-      console.log("Valor de ColClueSat en C: "+colsCluesSat[d]);
+      console.log("Valor de ColClueSat en " +c+": "+colsCluesSat[d]);
     }
-
-
     setJugando(!bandera);
   }
 
