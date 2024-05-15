@@ -70,18 +70,17 @@ function Game() {
           newColsCluesSat[j] = (1 === response[`ColSat`]);
           setColsCluesSat(newColsCluesSat);
 
-          //Hasta aca el newconls y eso funciona bien logicamente y todo. Asigna los nuevos valores correctamente?
-
-          console.log("Estoy dentro del succes. Imprimiento contenido de arreglos: ");
-          imprimirArreglos();
-
           console.log("Valores nuevos de RowSat del put: " + response[`RowSat`]);
           console.log("Valores nuevos de ColSat del put: " + response[`ColSat`]);
           setRowSatValue(newRowsCluesSat);
           setColSatValue(newColsCluesSat);
+
+          console.log("Estoy dentro del succes. Imprimiento contenido de arreglos: ");
+          imprimirArreglos();
+
+          checkearFinDeJuego(newRowsCluesSat, newColsCluesSat);
         }
         setWaiting(false);
-        checkearFinDeJuego();
       });
   }
   }
@@ -105,17 +104,17 @@ function Game() {
     });
   };
 
-  function checkearFinDeJuego(){
+  function checkearFinDeJuego(rowsToCheck, colsToCheck){
     var bandera = true;
 
     for (var c = 0; bandera && c < rowsCluesSat.length; c++){
-      bandera = (rowsCluesSat[c] === true);
-      console.log("Valor de rowClueSat en "+c+": "+rowsCluesSat[c]);
+      bandera = (rowsToCheck[c] === true);
+      console.log("Valor de rowClueSat en "+c+": "+rowsToCheck[c]);
     }
 
     for (var d = 0; bandera && d < colsCluesSat.length; d++){
-      bandera = (colsCluesSat[d] === true);
-      console.log("Valor de ColClueSat en " +c+": "+colsCluesSat[d]);
+      bandera = (colsToCheck[d] === true);
+      console.log("Valor de ColClueSat en " +c+": "+colsToCheck[d]);
     }
     setJugando(!bandera);
   }
