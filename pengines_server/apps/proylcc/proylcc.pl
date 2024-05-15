@@ -59,6 +59,9 @@ decidirResultado(H1,T1,H2,T2,Resultado):-
 	\+checkeoSat(H1,T1,H2,T2,_),
 	Resultado is 0.
 
+headTail([],H,T):-
+	H = 0,
+	T = [].
 
 headTail([He],H,T):-
 	H = He,
