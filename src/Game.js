@@ -45,8 +45,8 @@ function Game() {
     }
 
     if (!inicializado){
-      setColsCluesSat(Array(grid.length).fill(false));
-      setRowsCluesSat(Array(grid[0].length).fill(false));
+      setColsCluesSat(Array(grid[0].length).fill(false));
+      setRowsCluesSat(Array(grid.length).fill(false));
       setInicializado(true);
       console.log("Juego inicializado.");
     }
