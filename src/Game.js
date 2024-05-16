@@ -45,10 +45,10 @@ function Game() {
     }
 
     if (!inicializado){
+      //Inicializa los arreglos para pistas satisfechas en filas y columnas
       setColsCluesSat(Array(grid[0].length).fill(false));
       setRowsCluesSat(Array(grid.length).fill(false));
       setInicializado(true);
-      console.log("Juego inicializado.");
     }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
@@ -62,21 +62,18 @@ function Game() {
         if (success) {
           setGrid(response['ResGrid']);
 
+          //Actualiza el arreglo de pistas de filas satisfechas luego de realizar el movimiento
           let newRowsCluesSat = [...rowsCluesSat];
           newRowsCluesSat[i] = (1 === response[`RowSat`]);
           setRowsCluesSat(newRowsCluesSat);
 
+          //Actualiza el arreglo de pistas de columnas satisfechas luego de realizar el movimiento
           let newColsCluesSat = [...colsCluesSat];
           newColsCluesSat[j] = (1 === response[`ColSat`]);
           setColsCluesSat(newColsCluesSat);
 
-          console.log("Valores nuevos de RowSat del put: " + response[`RowSat`]);
-          console.log("Valores nuevos de ColSat del put: " + response[`ColSat`]);
           setRowSatValue(newRowsCluesSat);
           setColSatValue(newColsCluesSat);
-
-          console.log("Estoy dentro del succes. Imprimiento contenido de arreglos: ");
-          imprimirArreglos();
 
           checkearFinDeJuego(newRowsCluesSat, newColsCluesSat);
         }
@@ -90,31 +87,17 @@ function Game() {
     setContent(content === '#' ? 'X' : '#');
   }
 
-  const imprimirArreglos = () => {
-    // Imprimir colsCluesSat
-    console.log("colsCluesSat:");
-    colsCluesSat.forEach((valor, indice) => {
-      console.log(`Índice ${indice}: ${valor}`);
-    });
-  
-    // Imprimir rowsCluesSat
-    console.log("rowsCluesSat:");
-    rowsCluesSat.forEach((valor, indice) => {
-      console.log(`Índice ${indice}: ${valor}`);
-    });
-  };
-
   function checkearFinDeJuego(rowsToCheck, colsToCheck){
     var bandera = true;
 
+    //Chequea las filas que tienen las pistas satisfechas
     for (var c = 0; bandera && c < rowsCluesSat.length; c++){
       bandera = (rowsToCheck[c] === true);
-      console.log("Valor de rowClueSat en "+c+": "+rowsToCheck[c]);
     }
 
+    //Chequea las columnas que tienen las pistas satisfechas
     for (var d = 0; bandera && d < colsCluesSat.length; d++){
       bandera = (colsToCheck[d] === true);
-      console.log("Valor de ColClueSat en " +c+": "+colsToCheck[d]);
     }
     setJugando(!bandera);
   }
@@ -134,7 +117,7 @@ function Game() {
         colSat={colSatValue}
       />
       <div className="game-info">
-        {jugando ? "Jugando" : "Fin del juego"}
+      {!inicializado ? "Sin inicializar" : (jugando ? "Jugando" : "Fin del juego")}
       </div>
       <div>
             <Boton text={content} clic={cambiarContent} />
