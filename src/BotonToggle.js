@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 
-function BotonToggle({ activado }) { 
-  const [encendido, setEncendido] = useState(false);
+function BotonToggle({ mostrar, ocultar }) { 
+  const [encendido, setEncendido] = useState(false);//del boton toggle
 
   const cambiar = () => {
     setEncendido(!encendido);
-    if (activado) {
-      activado(!encendido);
+
+    if (!encendido) {
+      mostrar(!encendido);
+    }else{
+      ocultar(!encendido);
     }
   };
 

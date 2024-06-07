@@ -10,8 +10,8 @@ let pengine;
 function Game() {
   // State
   const [grid, setGrid] = useState(null);
-  //const [gridResuelta, setGridResuelta] = useState(null);
- // const [gridAux, setGridAux] = useState(null);
+  const [gridResuelta, setGridResuelta] = useState(null);
+  const [gridAux, setGridAux] = useState(null);
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
@@ -40,16 +40,23 @@ function Game() {
         setColsClues(response['ColumClues']);
         setColsCluesSat(Array(response['ColumClues'].length));
         setRowsCluesSat(Array(response['RowClues'].length));
+        console.log("Sali del init");
       }
     });
 
     //Crea la grilla ya resuelta para la funcion "Mostrar solucion"
-   /* const querryP = 'grillaResuelta(RowClues, ColumClues, Grid, GridResuelta)';
+    setGridResuelta(grid);
+    const querryP = 'mostrarSolucion(GridResuelta, rowsClues, colsClues)';
+    
     pengine.query(querryP, (success, response) => {
         if (success){
-            setGridResuelta(response('GridResuelta'));
+            setGridResuelta(response['GridResuelta']);
+            console.log("Sali del gridResuelta");
+        }else{
+          console.log("Fallo");
         }
-    });*/
+    });
+
   }
 
   function handleClick(i, j) {
@@ -164,14 +171,16 @@ function Game() {
   }
 
   function mostrarSolucion(){
-    //setGridAux = grid
-    //setGrid = setGridResuelta
-    //setWaitingTrue o MostrandoSolucion como const
-    //sino
-    //setGrid = setGridAux
-    //setWaitingFalse
-    console.log('Toggle activado:');
+    setGridAux(grid);
+    setGrid(gridResuelta);
+    setWaiting(true);
     return true;
+  }
+
+  function ocultarSolucion(){
+    setGrid(gridAux);
+    setWaiting(false);
+    return false;
   }
 
   /*const mostrarSolucion = (activado) => {
@@ -200,7 +209,7 @@ function Game() {
         colSat={colSatValue}
       />
      <div className="boton-toggle">
-        <BotonToggle activado={mostrarSolucion} />
+        <BotonToggle mostrar={mostrarSolucion} ocultar={ocultarSolucion}/>
         Mostrar soluciones
       </div>
       <div className="botonRevelar">
