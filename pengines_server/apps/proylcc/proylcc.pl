@@ -72,8 +72,9 @@ headTail(Lista,H,T):-
 
 checkeoSat("#",[],1,[],_). 
 
-checkeoSat(C,[],0,[],_):-
-	C\="#".
+checkeoSat(C,[],0,[],_):-	
+    C="X";
+    C="".
 
 
 checkeoSat("#",ListaCaracteres,Pista,ListaPistas,_):- 
@@ -84,21 +85,20 @@ checkeoSat("#",ListaCaracteres,Pista,ListaPistas,_):-
 	Xpista is Pista-1,
 	checkeoSat(H,T,Xpista,ListaPistas,1).
 
-checkeoSat(C,ListaCaracteres,0,ListaPistas,1):-
-	C\="#",
+checkeoSat(_,ListaCaracteres,0,ListaPistas,1):-
 	length(ListaCaracteres,Largo),
 	Largo>0,
 	[H|T] = ListaCaracteres,
 	headTail(ListaPistas,H2,T2),
 	checkeoSat(H,T,H2,T2,0).
 
-checkeoSat(C,ListaCaracteres,Pista,ListaPistas,0):-
-	C\="#",
+checkeoSat(_,ListaCaracteres,Pista,ListaPistas,0):-
 	length(ListaCaracteres,Largo),
 	Largo>0,
 	[H|T] = ListaCaracteres,
 	checkeoSat(H,T,Pista,ListaPistas,0).
 
+/* RECIBE UN NUMERO C, UNA GRILLA Y UNA VARIABLE A DEVOLVER, RETORNA LA LISTA EN REVERSA*/
 columnaALista(C,[H],Resultado):-
 	nth0(C,H,Cont),
 	append([],[Cont],Resultado).
@@ -118,3 +118,46 @@ adaptarLista(["X"|Xs], ["X"|Ys]) :-
     adaptarLista(Xs, Ys).
 adaptarLista(["#"|Xs], ["#"|Ys]) :- 
     adaptarLista(Xs, Ys).
+
+
+mostrarSolucion(Grid,PFil,PCol):-
+    resolverFilas(Grid,PFil),
+    resolverColumnas(Grid,PCol,0).
+
+resolverColumnas(G,[Pistas],C):-
+    columnaALista(C,G,L),
+    reverse(L,Lista),
+    headTail(Lista,Cont,ListaRes),
+    headTail(Pistas,PistaActual,PistasRes),
+    checkeoSat(Cont,ListaRes,PistaActual,PistasRes,_).
+    
+
+resolverColumnas(G,PC,C):-
+    columnaALista(C,G,F),
+    reverse(F,Lista),
+    headTail(Lista,Cont,ListaRes),
+    
+    headTail(PC,Pistas,ArrayListasPistas),
+    headTail(Pistas,PistaActual,PistasRes),
+    
+    checkeoSat(Cont,ListaRes,PistaActual,PistasRes,_),
+    CAux is C+1,
+    resolverColumnas(G,ArrayListasPistas,CAux).
+
+resolverFilas([Fila],[Pistas]):-
+    headTail(Fila,Cont,FilaRes),
+    headTail(Pistas,PistaActual,PistasRes),
+    checkeoSat(Cont,FilaRes,PistaActual,PistasRes,_).
+    
+
+resolverFilas(G,PF):-
+    headTail(G,Fila,Grilla), 
+    headTail(Fila,Cont,FilaRes),
+    
+    headTail(PF,Pistas,ArrayListasPistas),
+    headTail(Pistas,PistaActual,PistasRes),
+    
+    checkeoSat(Cont,FilaRes,PistaActual,PistasRes,_),
+    
+    resolverFilas(Grilla,ArrayListasPistas).
+    

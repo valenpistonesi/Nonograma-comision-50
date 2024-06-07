@@ -104,7 +104,7 @@ body {
   display: inline-block;
   width: 3.6em;
   height: 2em;
-  overflow: hidden; /* Asegúrate de ocultar cualquier contenido desbordante */
+  overflow: hidden; 
 }
 
 /* Hide default HTML checkbox */
@@ -149,4 +149,48 @@ body {
 
 .switch input:checked + .slider:before {
   transform: translateX(1.6em);
+}
+
+/* Boton revelar celda */
+.botonRevelar {
+  --color: #0077ff;
+  font-family: inherit;
+  display: inline-block;
+  width: 6em;
+  height: 2.6em;
+  line-height: 2.5em;
+  overflow: hidden;
+  cursor: pointer;
+  margin: -2px;
+  font-size: 17px;
+  z-index: 1;
+  color: var(--color);
+  border: 2px solid var(--color);
+  border-radius: 6px;
+  position: relative;
+}
+
+.botonRevelar::before {
+  position: absolute;
+  content: "";
+  background: var(--color);
+  width: 150px;
+  height: 200px;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.botonRevelar:hover {
+  color: white;
+}
+
+.botonRevelar:before {
+  top: 100%;
+  left: 100%;
+  transition: 0.3s all;
+}
+
+.botonRevelar:hover::before {
+  top: -30px;
+  left: -30px;
 }

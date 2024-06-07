@@ -3,6 +3,7 @@ import PengineClient from './PengineClient';
 import Board from './Board';
 import Boton from './Boton';
 import BotonToggle from './BotonToggle';
+import BotonRevelar from './Boton-Revelar';
 
 let pengine;
 
@@ -177,6 +178,10 @@ function Game() {
     console.log('Toggle activado:', activado);
   };*/
 
+  function revelarPista(){
+
+  }
+
   if (!grid) {
     return null;
   }
@@ -197,6 +202,9 @@ function Game() {
      <div className="boton-toggle">
         <BotonToggle activado={mostrarSolucion} />
         Mostrar soluciones
+      </div>
+      <div className="botonRevelar">
+        <BotonRevelar clic={revelarPista}/>
       </div>
      <div>
         <Boton text={content} clic={cambiarContent} />
