@@ -18,10 +18,8 @@ function Game() {
   const [content, setContent] = useState('#');
   const [colsCluesSat, setColsCluesSat] = useState(null);
   const [rowsCluesSat, setRowsCluesSat] = useState(null);
-  const [rowSatValue, setRowSatValue] = useState(false);
-  const [colSatValue, setColSatValue] = useState(false);
-  const [inicializado, setInicializado] = useState(false);
   const [jugando, setJugando] = useState(true);
+  const [inicializado, setInicializado] = useState(false);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -30,33 +28,53 @@ function Game() {
     PengineClient.init(handleServerReady);
   }, []);
 
-  function handleServerReady(instance) {
+  async function handleServerReady(instance) {
+    callInit(instance);
+  }
+
+  async function callInit(instance){
     pengine = instance;
-    const queryS = 'init(RowClues, ColumClues, Grid)';
-    pengine.query(queryS, (success, response) => {
+    const queryS = `init(RowClues, ColumClues, Grid)`;
+    await pengine.query(queryS, async (success, response) => {
       if (success) {
+        console.log(JSON.stringify(response['Grid']));
+        setGridResuelta(response['Grid']);
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
         setColsCluesSat(Array(response['ColumClues'].length));
         setRowsCluesSat(Array(response['RowClues'].length));
-        console.log("Sali del init");
-      }
-    });
 
-    //Crea la grilla ya resuelta para la funcion "Mostrar solucion"
-    setGridResuelta(grid);
-    const querryP = 'mostrarSolucion(GridResuelta, rowsClues, colsClues)';
-    
-    pengine.query(querryP, (success, response) => {
-        if (success){
-            setGridResuelta(response['GridResuelta']);
-            console.log("Sali del gridResuelta");
-        }else{
-          console.log("Fallo");
+        let auxGridResuelta = JSON.stringify(response['Grid']);
+        auxGridResuelta = auxGridResuelta.replaceAll('"_"', '_'); 
+        console.log('la grid antes de procesar '+auxGridResuelta);
+
+        let auxRowsClues = JSON.stringify(response['RowClues']);
+        auxRowsClues = auxRowsClues.replaceAll('"_"', '_'); 
+        console.log('la rowclues antes de procesar '+auxRowsClues);
+
+        let auxColClues = JSON.stringify(response['ColumClues']);
+        auxColClues = auxColClues.replaceAll('"_"', '_'); 
+        console.log('la gcolCLues antes de procesar '+auxColClues);
+
+
+        const querryP = `mostrarSolucion(${auxGridResuelta}, ${auxRowsClues},${auxColClues},GridResuelta)`;
+        console.log(querryP);
+        await pengine.query(querryP, (success, response) => {
+            if (success){
+              setGridResuelta(response['GridResuelta']);
+              console.log("la grid resuelta es: "+JSON.stringify(response['GridResuelta']));
+
+              console.log(auxGridResuelta);
+            }else{
+              console.log("Fallo");
+            }
         }
-    });
-
+        );
+      }
+    } 
+    );
+    //Crea la grilla ya resuelta para la funcion "Mostrar solucion"
   }
 
   function handleClick(i, j) {
@@ -66,15 +84,7 @@ function Game() {
     }
 
     if (!inicializado){
-      //Inicializa los arreglos para pistas satisfechas en filas y columnas
-      colsCluesSat.fill(false);
-      rowsCluesSat.fill(false);
-      chequearEstadoInicial(grid.length, grid[0].length);
-      //checkearFinDeJuego(grid.length, grid[0].length);
-      //hacer querry a pl preguntando por cada fila y columna a ver si estan satisfechas
-      //set waiting?
-      //actualizar cluesSat
-      //chequear fin del juego
+      checkearFinDeJuego(rowsCluesSat, colsCluesSat);
       setInicializado(true);
     }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
@@ -82,6 +92,7 @@ function Game() {
 
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
+    
     if (inicializado){
       const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
       setWaiting(true);
@@ -99,14 +110,11 @@ function Game() {
           newColsCluesSat[j] = (1 === response[`ColSat`]);
           setColsCluesSat(newColsCluesSat);
 
-          setRowSatValue(newRowsCluesSat);
-          setColSatValue(newColsCluesSat);
-
           checkearFinDeJuego(newRowsCluesSat, newColsCluesSat);
         }
         setWaiting(false);
       });
-  }
+    }
   }
 
   const cambiarContent = () => {
@@ -114,46 +122,62 @@ function Game() {
     setContent(content === '#' ? 'X' : '#');
   }
 
-  function chequearEstadoInicial(largoFilas, largoColumnas){
-    const rowsCluesT = JSON.stringify(rowsClues);
-    const colsCluesT = JSON.stringify(colsClues);
+  function chequearEstadoInicial(filas, columnas, grilla){
+    let nuevoRowsCluesSat= Array(filas.length).fill(false);
+    let nuevoColsCluesSat= Array(columnas.length).fill(false);
+
+    setWaiting(true);
+    let pendingRowQuerys = filas.length;
+    let pendingColQuerys = columnas.length;
+
     //Para las filas
+    for (let ii = 0; ii < filas.length; ii++){
+      const squaresT = JSON.stringify(grilla[ii]).replaceAll('"_"', '"X"');
+      const queryT = `checkeoSatShell(${squaresT}, [${filas[ii]}], Resultado)`;
 
-    for (let ii = 0; ii < largoFilas; ii++){
-        const squaresT = JSON.stringify(grid[ii]).replaceAll('"_"', '"X"');
-        const queryT = `checkeoSatShell(${squaresT}, [${rowsClues[ii]}], Resultado)`;
-
-        let newRowsCluesSat = [...rowsCluesSat];
-        setWaiting(true);
-        pengine.query(queryT, (success, response) => {
-          if(success){
-            newRowsCluesSat[ii] = (1 === response[`Resultado`]);
-            console.log(" newRowsCluesSat["+ii+"]: "+ newRowsCluesSat[ii]);
-            setRowsCluesSat(newRowsCluesSat);
-          }
-        });
-        setRowSatValue(newRowsCluesSat);
-        console.log("newRowsCluesSat: "+newRowsCluesSat);
-        setWaiting(false);
-    }
-
-    /*
-      el tema es que necesitaria iterar para pintar todas las pistas, porque el repintado del board
-      esta armado para el put, con una coordenada (i, j). Pero como ii es 5 es como que solo pinta la ultima
-      pero en html no puedo iterar. y el metodo que repinta es un return
-      entonces? como haago?
-    */
-
-    //para las columnas
-   /* for (var j = 0; j < largoColumnas; j++){
-      const queryR = `checkeoSatShell([${[grid[0][j]]}], ${colsClues[j]}, Resultado})`;
-      pengine.query(queryR, (success, response) => {
+      pengine.query(queryT, (success, response) => {
         if(success){
-          setColsCluesSat[j] = response(`Resultado`);
+          pendingRowQuerys--;
+          nuevoRowsCluesSat[ii] = (1 === response[`Resultado`]);
+          if (pendingRowQuerys === 0){
+            setWaiting(false);
+            setRowsCluesSat(nuevoRowsCluesSat);
+          }
         }
       });
-  }*/
+    }
+
+    //Para columnas
+    for (let jj = 0; jj < columnas.length; jj++){
+      const squaresC = armarColumna(grilla, jj);
+
+      const queryC = `checkeoSatShell(${squaresC}, [${columnas[jj]}], Resultado)`;
+
+      pengine.query(queryC, (success, response) => {
+        if(success){
+          pendingColQuerys--;
+          nuevoColsCluesSat[jj] = (1 === response[`Resultado`]);
+          if (pendingColQuerys === 0){
+            setWaiting(false);
+            setColsCluesSat(nuevoColsCluesSat);
+          }
+        }
+      });
+    }
   }
+
+  function armarColumna(grilla, jj){
+    let tamaño = grilla[0].length;
+    let columna = new Array(tamaño);
+
+    for (let indice = 0; indice < grilla[0].length; indice++){
+      columna[indice]=grilla[indice][jj];
+    }
+
+    const columnaArmada = JSON.stringify(columna).replaceAll('"_"', '"X"');
+    return columnaArmada;
+  }
+
 
   function checkearFinDeJuego(rowsToCheck, colsToCheck){
     var bandera = true;
@@ -171,6 +195,9 @@ function Game() {
   }
 
   function mostrarSolucion(){
+    console.log("mostrar solucion "+grid);
+    console.log("mostrar solucion "+gridResuelta);
+
     setGridAux(grid);
     setGrid(gridResuelta);
     setWaiting(true);
@@ -182,10 +209,6 @@ function Game() {
     setWaiting(false);
     return false;
   }
-
-  /*const mostrarSolucion = (activado) => {
-    console.log('Toggle activado:', activado);
-  };*/
 
   function revelarPista(){
 
@@ -205,8 +228,8 @@ function Game() {
         rowsClues={rowsClues}
         colsClues={colsClues}
         onClick={(i, j) => handleClick(i, j)}
-        rowSat={rowSatValue}
-        colSat={colSatValue}
+        rowSat={rowsCluesSat}
+        colSat={colsCluesSat}
       />
      <div className="boton-toggle">
         <BotonToggle mostrar={mostrarSolucion} ocultar={ocultarSolucion}/>

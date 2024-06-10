@@ -70,33 +70,33 @@ headTail([He],H,T):-
 headTail(Lista,H,T):-
 	[H|T] =Lista.
 
-checkeoSat("#",[],1,[],_). 
+checkeoSatAlt("#",[],1,[],_). 
 
-checkeoSat(C,[],0,[],_):-	
+checkeoSatAlt(C,[],0,[],_):-	
     C="X";
     C="".
 
 
-checkeoSat("#",ListaCaracteres,Pista,ListaPistas,_):- 
+checkeoSatAlt("#",ListaCaracteres,Pista,ListaPistas,_):- 
 	length(ListaCaracteres,Largo),
 	Largo>0,
 	[H|T] = ListaCaracteres,
 	Pista > 0,
 	Xpista is Pista-1,
-	checkeoSat(H,T,Xpista,ListaPistas,1).
+	checkeoSatAlt(H,T,Xpista,ListaPistas,1).
 
-checkeoSat(_,ListaCaracteres,0,ListaPistas,1):-
+checkeoSatAlt(_,ListaCaracteres,0,ListaPistas,1):-
 	length(ListaCaracteres,Largo),
 	Largo>0,
 	[H|T] = ListaCaracteres,
 	headTail(ListaPistas,H2,T2),
-	checkeoSat(H,T,H2,T2,0).
+	checkeoSatAlt(H,T,H2,T2,0).
 
-checkeoSat(_,ListaCaracteres,Pista,ListaPistas,0):-
+checkeoSatAlt(_,ListaCaracteres,Pista,ListaPistas,0):-
 	length(ListaCaracteres,Largo),
 	Largo>0,
 	[H|T] = ListaCaracteres,
-	checkeoSat(H,T,Pista,ListaPistas,0).
+	checkeoSatAlt(H,T,Pista,ListaPistas,0).
 
 /* RECIBE UN NUMERO C, UNA GRILLA Y UNA VARIABLE A DEVOLVER, RETORNA LA LISTA EN REVERSA*/
 columnaALista(C,[H],Resultado):-
@@ -111,6 +111,36 @@ columnaALista(C,Grilla,Resultado):-
 
 % el caso mas general es con X, 
 
+checkeoSat("#",[],1,[],_). 
+
+checkeoSat(C,[],0,[],_):-
+	C\="#".
+
+
+checkeoSat("#",ListaCaracteres,Pista,ListaPistas,_):- 
+	length(ListaCaracteres,Largo),
+	Largo>0,
+	[H|T] = ListaCaracteres,
+	Pista > 0,
+	Xpista is Pista-1,
+	checkeoSat(H,T,Xpista,ListaPistas,1).
+
+checkeoSat(C,ListaCaracteres,0,ListaPistas,1):-
+	C\="#",
+	length(ListaCaracteres,Largo),
+	Largo>0,
+	[H|T] = ListaCaracteres,
+	headTail(ListaPistas,H2,T2),
+	checkeoSat(H,T,H2,T2,0).
+
+checkeoSat(C,ListaCaracteres,Pista,ListaPistas,0):-
+	C\="#",
+	length(ListaCaracteres,Largo),
+	Largo>0,
+	[H|T] = ListaCaracteres,
+	checkeoSat(H,T,Pista,ListaPistas,0).
+
+
 adaptarLista([], []). 
 adaptarLista([""|Xs], [""|Ys]) :- 
     adaptarLista(Xs, Ys).
@@ -120,16 +150,17 @@ adaptarLista(["#"|Xs], ["#"|Ys]) :-
     adaptarLista(Xs, Ys).
 
 
-mostrarSolucion(Grid,PFil,PCol):-
-    resolverFilas(Grid,PFil),
-    resolverColumnas(Grid,PCol,0).
+mostrarSolucion(Grid,PFil,PCol,GridResuelta):-
+	resolverFilas(Grid,PFil),
+	resolverColumnas(Grid,PCol,0),
+	GridResuelta = Grid.
 
 resolverColumnas(G,[Pistas],C):-
     columnaALista(C,G,L),
     reverse(L,Lista),
     headTail(Lista,Cont,ListaRes),
     headTail(Pistas,PistaActual,PistasRes),
-    checkeoSat(Cont,ListaRes,PistaActual,PistasRes,_).
+    checkeoSatAlt(Cont,ListaRes,PistaActual,PistasRes,_).
     
 
 resolverColumnas(G,PC,C):-
@@ -140,14 +171,14 @@ resolverColumnas(G,PC,C):-
     headTail(PC,Pistas,ArrayListasPistas),
     headTail(Pistas,PistaActual,PistasRes),
     
-    checkeoSat(Cont,ListaRes,PistaActual,PistasRes,_),
+    checkeoSatAlt(Cont,ListaRes,PistaActual,PistasRes,_),
     CAux is C+1,
     resolverColumnas(G,ArrayListasPistas,CAux).
 
 resolverFilas([Fila],[Pistas]):-
     headTail(Fila,Cont,FilaRes),
     headTail(Pistas,PistaActual,PistasRes),
-    checkeoSat(Cont,FilaRes,PistaActual,PistasRes,_).
+    checkeoSatAlt(Cont,FilaRes,PistaActual,PistasRes,_).
     
 
 resolverFilas(G,PF):-
@@ -157,7 +188,34 @@ resolverFilas(G,PF):-
     headTail(PF,Pistas,ArrayListasPistas),
     headTail(Pistas,PistaActual,PistasRes),
     
-    checkeoSat(Cont,FilaRes,PistaActual,PistasRes,_),
+    checkeoSatAlt(Cont,FilaRes,PistaActual,PistasRes,_),
     
     resolverFilas(Grilla,ArrayListasPistas).
     
+checkeoSatAlt("#",[],1,[],_). 
+
+checkeoSatAlt(C,[],0,[],_):-	
+	C="X";
+	C="".
+
+
+checkeoSatAlt("#",ListaCaracteres,Pista,ListaPistas,_):- 
+	length(ListaCaracteres,Largo),
+	Largo>0,
+	[H|T] = ListaCaracteres,
+	Pista > 0,
+	Xpista is Pista-1,
+	checkeoSatAlt(H,T,Xpista,ListaPistas,1).
+
+checkeoSatAlt(_,ListaCaracteres,0,ListaPistas,1):-
+	length(ListaCaracteres,Largo),
+	Largo>0,
+	[H|T] = ListaCaracteres,
+	headTail(ListaPistas,H2,T2),
+	checkeoSatAlt(H,T,H2,T2,0).
+
+checkeoSatAlt(_,ListaCaracteres,Pista,ListaPistas,0):-
+	length(ListaCaracteres,Largo),
+	Largo>0,
+	[H|T] = ListaCaracteres,
+	checkeoSatAlt(H,T,Pista,ListaPistas,0).
